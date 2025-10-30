@@ -18,17 +18,15 @@ const myArray = ["Hola", 12, true, "Món", {}, { id: 15 }, ["lala"]];
 //     return res;
 // }
 
-function divideixPerTipus(arr) {
-    const res = arr.reduce((res, el) => {
-        const typeOf = typeof el;
-        if (!res[typeOf]) {
-            res[typeOf] = [el];
-        } else {
-            res[typeOf].push(el);
-        }
-        return res;
-    });
-}
+ function divideixPerTipus(arr){
+    return arr.reduce((res, el) => {
+    const typeOf = typeof el;
+    if (!res[typeOf]) res[typeOf] = [];
+    res[typeOf].push(el);
+    return res;
+  }, {});
+
+ }
 
 let arr = divideixPerTipus(myArray);
 console.log(arr);

@@ -17,42 +17,42 @@ const users = [
 // Ordenar per edat
 // Crear plantilla HTML
 
-// le pasamos las arrays 1 y 2 a mergear, donde arr1 es la que prevalece, le pasamos props
-// los props son las keys de las dos arrays ordenados
-// se ordenan asi [edat, age], [nom, edat], [pla, membership] donde el primero sera el que prevalece. 
-// en este caso no haria falta pero si en el objeto estuviera desordenado y quiseras mezclar no podrias. 
 
-function mergeArr(arr1, arr2, props) {
+// me plante el ejercicio que si estuviera desordenadas las arrays no importara
+// asi que hice props para traducir, los props que no traduces no se añaden. 
+const propsToMap = [
+    ['edat', 'age'],
+    ['nom', 'name'],
+    ['pla', 'membership']
+];
+// le pasas la array que quieres añadirle los valores, la que quieres traducir, y los props para ello. 
+function doArr(arr1, arr2, props) {
+    // traducimos
     arr2.map((el) => {
         const newEl = {};
         props.forEach(prop => {
             newEl[prop[0]] = el[prop[1]];
         });
         return newEl;
+        // en el foreach pues unificamos
     }).forEach(el => {
         arr1.push(el);
     });
-    return arr1;
+    // ordenamos 
+    return arr1.sort((a, b) => a['edat'] - b['edat']);
 }
 
-const propsToMap = [
-  ['edat', 'age'],
-  ['nom', 'name'],
-  ['pla', 'membership']
-];
-
-const arr1 = mergeArr(usuaris, users, propsToMap );
+const arr1 = mergeArr(usuaris, users, propsToMap);
 console.log(arr1);
 
 function llistarHtml(arr) {
-
-}
+    arr.forEach((el) => {
+        const li = document.createElement("li");
+        li.textContent = el; 
+    });
+};
 
 //console.log(html);
 //document.writeln(html)
-
-
-
-
 // <li> Nom: nom, Edat: edat</li>
 // Imprimir la llista

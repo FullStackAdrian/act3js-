@@ -5,8 +5,18 @@ const usuaris = [
     { edat: 25, nom: 'Robin', pla: 'gold' },
 ];
 // Fes la funció amb reduce 
-function groupBy(arr,prop){
-}
+function groupBy(arr,prop){ 
+    return arr.reduce(( filtered, el ) => {
+        const elValue = el[prop];
+        if (!filtered[elValue]) {
+            filtered[elValue] = [el];
+        }else { 
+            filtered[elValue].push(el);
+        }
+        return filtered;
+    }, {});
+}; 
+
 const grouped = groupBy(usuaris,'pla');
 console.log({grouped});
 // Sortida (millor veure en Chrome)

@@ -6,17 +6,17 @@ const usuaris = [
 ];
 
 // Fes servir filter
-function getPaidUsers(usrs){
-
+function getPaidUsers(usrs) {
+    return usrs.sort(( a, b ) => a['edat'] - b['edat']);
 }
 const pagaments = getPaidUsers(usuaris);
 // Ordena els pagaments amb sort per edat
 console.log(pagaments);
 // construeix els elements d'una llista en html amb <li></li>
 // construeix una llista no ordenada amb <ul></ul>
- 
- console.log(html);
- // Si es vol veure al navegador descomentar
+
+//console.log(html);
+// Si es vol veure al navegador descomentar
 //  document.writeln(html);
 /**
  * Usuaris de pagament

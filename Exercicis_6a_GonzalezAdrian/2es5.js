@@ -76,3 +76,11 @@ distr1.fabricant = zanusi;
 // 6 
 zanusi.comercial = 'comercial_nou';
 console.log(distr1.fabricant.comercial);
+
+// 7 
+const distr3b = Object.create(Object.getPrototypeOf(distr3)); 
+
+
+distr3b.fabricant = balay; 
+console.log(distr3.fabricant.nom);
+console.log(distr3b.fabricant.nom);

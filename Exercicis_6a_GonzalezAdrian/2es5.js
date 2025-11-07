@@ -72,7 +72,7 @@ doObj(equips);
 
 // 5 
 distr1.fabricant = zanusi;
-console.log(distr1.fabricant.nom);
 
 // 6 
-
+zanusi.comercial = 'comercial_nou';
+console.log(distr1.fabricant.comercial);

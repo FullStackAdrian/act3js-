@@ -39,7 +39,7 @@ Equip.prototype = Object.create(General.prototype);
 Equip.prototype.constructor = Equip;
 
 // fabricantes 
-const fagor = new Fabricant('Fagor', 'comercialF', 'San Sebastia', '902105011');
+let  fagor = new Fabricant('Fagor', 'comercialF', 'San Sebastia', '902105011');
 const zanusi = new Fabricant('Zanusi', 'comercialZ', 'Saragosa', '902105111');
 const balay = new Fabricant('Balay', 'comercialB', 'Sevilla', '902105211');
 // distribuidores
@@ -79,8 +79,18 @@ console.log(distr1.fabricant.comercial);
 
 // 7 
 const distr3b = Object.create(Object.getPrototypeOf(distr3)); 
-
-
 distr3b.fabricant = balay; 
 console.log(distr3.fabricant.nom);
 console.log(distr3b.fabricant.nom);
+
+// 8 
+const originalFagor = fagor;
+fagor =  zanusi; 
+console.log(fagor.nom);
+// lo que pasa es que literalmente asignas el proto de zanusi a fagor
+//  lo que cambias en fagor ahora se cambia en zanusi 
+// no existen las dadas originales 
+// si tienes una copia de antes puedes apuntar otra vez al prototype de antes 
+fagor = originalFagor; 
+
+// 10

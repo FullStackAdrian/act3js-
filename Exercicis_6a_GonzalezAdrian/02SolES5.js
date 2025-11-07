@@ -4,7 +4,7 @@ function General() {
   this.garantia = 1;
 };
 General.prototype.dObj = function () {
-  dObj(this);
+  doObj(this);
 };
 // ---------------- a) Constructors i instàncies ---------------- 
 // a.1 Funcions constructores
@@ -47,7 +47,7 @@ const dObj_s = function (obj) {
 };
 
 // dObj descriptiu: propietats més noms del objectes que conté
-function dObj(obj) {
+function doObj(obj) {
   let msg = "Objecte:";
   for (const prop in obj) {
     // if(true){
@@ -89,9 +89,9 @@ console.log("Telèfon fabricant rentadora equip1['fabricant']['telf']:", equip1[
 
 
 console.log("\n== (a.4) Comprovació dObj  ==");
-dObj(fagor);
-dObj(distr1);
-dObj(equip1);
+doObj(fagor);
+doObj(distr1);
+doObj(equip1);
 
 
 console.log("\n== (a.5) Canvi fabricant de distr1 -> Zanussi ==");
@@ -111,8 +111,8 @@ console.log("\n== (a.7) Còpia de distr3 a distr3b i canvi fabricant -> Balay ==
 const distr3b = JSON.parse(JSON.stringify(distr3));
 distr3b.fabricant = balay;
 console.log("distr3.fabricant.nom =", distr3.fabricant.nom, "| distr3b.fabricant.nom =", distr3b.fabricant.nom);
-dObj(distr3);
-dObj(distr3b);
+doObj(distr3);
+doObj(distr3b);
 
 console.log("\n== (a.8) fagor = zanussi (assignació per referència) ==");
 const fagorOriginal = JSON.parse(JSON.stringify(fagor));
@@ -131,17 +131,17 @@ fagor abans de fer l'assignació per referència.*/
 console.log("\n== (a.9) Restaurar dades originals de Fagor ==");
 fagor = fagorOriginal;
 
-dObj(fagor);
+doObj(fagor);
 
 /* ---------------- b) Arrays i mètodes ---------------- */
 console.log("\n== (b) Array d'equips i ordres ==");
 console.log("\n== (b.11) Mostra l'array amb dObj==");
 const arrEquips = [equip1, equip2, equip3, equip4];
-dObj(arrEquips)
+doObj(arrEquips)
 // 12: imprimir()
 arrEquips.imprimir = function () {
   for (let i = 0; i < this.length; i++) {
-    dObj(this[i]);
+    doObj(this[i]);
   }
 };
 

@@ -1,3 +1,14 @@
+
+function General() {
+    this.garantia = 1;
+};
+
+
+// agrego el doObj a el General prototype.     
+General.prototype.dObj = function () {
+  doObj(this);
+};
+
 function Fabricant(nom, comercial, ciutat, telf) {
   this.nom = nom;
   this.comercial = comercial;
@@ -48,12 +59,7 @@ const distribuidorRentadora = equips.find(e => e.nom === 'rentadora').distribuid
 console.log(distribuidorRentadora.nom + " " + distribuidorRentadora.fabricant.nom); 
 
 // 4
-function General() {
-    this.garantia = 1;
-};
-
-// do obj
-function dObj(obj) {
+function doObj(obj) {
     for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
             const valor = obj[key];
@@ -62,10 +68,11 @@ function dObj(obj) {
         }
     }
 }
+doObj(equips);
 
-// agrego el doObj a el General prototype.     
-General.prototype.dObj = function () {
-  dObj(this);
-};
+// 5 
+distr1.fabricant = zanusi;
+console.log(distr1.fabricant.nom);
 
-fagor.dObj();
+// 6 
+

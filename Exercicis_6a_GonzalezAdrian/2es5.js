@@ -5,6 +5,8 @@ function Fabricant(nom, comercial, ciutat, telf) {
   this.telf = telf;
   this.telfEmerg = 112;
 }
+Fabricant.prototype = Object.create(General.prototype);
+Fabricant.prototype.constructor = Fabricant;
 
 function Distribuidor(nom, ciutat, telf, fabricant) {
   this.nom = nom;
@@ -12,6 +14,8 @@ function Distribuidor(nom, ciutat, telf, fabricant) {
   this.telf = telf;
   this.fabricant = fabricant;
 }
+Distribuidor.prototype = Object.create(General.prototype);
+Distribuidor.prototype.constructor = Distribuidor;
 
 function Equip(nom, model, fabricant, distribuidor, potencia) {
   this.nom = nom;
@@ -20,6 +24,8 @@ function Equip(nom, model, fabricant, distribuidor, potencia) {
   this.distribuidor = distribuidor;
   this.potencia = potencia;
 }
+Equip.prototype = Object.create(General.prototype);
+Equip.prototype.constructor = Equip;
 
 // fabricantes 
 const fagor = new Fabricant('Fagor', 'comercialF', 'San Sebastia', '902105011');
@@ -41,15 +47,25 @@ const equips = [equip1, equip2, equip3, equip4];
 const distribuidorRentadora = equips.find(e => e.nom === 'rentadora').distribuidor;
 console.log(distribuidorRentadora.nom + " " + distribuidorRentadora.fabricant.nom); 
 
+// 4
 function General() {
     this.garantia = 1;
 };
 
 // do obj
+function dObj(obj) {
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            const valor = obj[key];
+            const tipo = typeof valor;
+            console.log(key + " -> Valor: " + valor + ", Tipo: " + tipo);
+        }
+    }
+}
+
+// agrego el doObj a el General prototype.     
 General.prototype.dObj = function () {
   dObj(this);
 };
 
-
-
-
+fagor.dObj();

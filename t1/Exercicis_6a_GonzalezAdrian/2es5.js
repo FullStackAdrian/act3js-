@@ -1,9 +1,9 @@
-
+// 22 
 function General() {
     this.garantia = 1;
 };
 
-
+//23
 // agrego el doObj a el General prototype.     
 General.prototype.dObj = function () {
   doObj(this);
@@ -68,7 +68,6 @@ function doObj(obj) {
         }
     }
 }
-doObj(equips);
 
 // 5 
 distr1.fabricant = zanusi;
@@ -93,4 +92,81 @@ console.log(fagor.nom);
 // si tienes una copia de antes puedes apuntar otra vez al prototype de antes 
 fagor = originalFagor; 
 
-// 10
+// 10 11 
+doObj(equips);
+
+// 12
+Array.prototype.imprimir = function imprimir() {
+  this.forEach(e => {
+    doObj(e);
+  });
+
+}
+equips.imprimir();
+ 
+// 13  14 
+
+function sortAlf(obj)  {
+    obj.sort(function(a, b) {
+        return a.nom.localeCompare(b.nom);
+    });
+};
+function sortNum(obj) {
+    obj.sort(function(a, b) {
+        return a.potencia - b.potencia;
+    });
+};
+function sortAlf(obj, callback) {
+    if (typeof callback !== 'function') {
+        callback = function(a, b) {
+            return a.nom.localeCompare(b.nom);
+        };
+    }
+    obj.sort(callback);
+}
+
+function sortNum(obj, callback) {
+    if (typeof callback !== 'function') {
+        callback = function(a, b) {
+            return a.potencia - b.potencia;
+        };
+    }
+    obj.sort(callback);
+}
+
+// 15
+const planxa = equips.find(e=> e.nom === 'planxa');
+console.log(planxa);
+planxa.temperaturaMax = 100;
+console.log(planxa);
+
+//16
+Equip.prototype.dataCompra = "no especificada";
+console.log(planxa.dataCompra);
+
+// 17
+planxa.dataCompra = "21-12-10";
+console.log(planxa.dataCompra);
+
+//18 
+Equip.prototype.dProp = function(prop) {
+    if (this.hasOwnProperty(prop) || (prop in this)) {
+        console.log(prop + " -> Valor: " + this[prop]);
+    } else {
+        console.log(prop + " no existe en " + this.nom);
+    }
+};
+planxa.dProp('temperaturaMax');
+
+// 19 
+delete planxa.temperaturaMax;
+planxa.dProp('temperaturaMax'); 
+
+// 20
+delete planxa.dataCompra;
+planxa.dProp('dataCompra'); 
+
+// 21 
+delete Equip.prototype.dataCompra;
+planxa.dProp('dataCompra'); 
+equip1.dProp('dataCompra'); 

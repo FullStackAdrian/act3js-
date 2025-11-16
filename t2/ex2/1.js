@@ -16,7 +16,9 @@ function random(number) {
 
 function createRandomImg() {
     const newImg = new Image(125, 125);
-    newImg.src = imgsPaths[random(3)];
+    const path = imgsPaths[random(3)];
+    newImg.src = path;
+    newImg.alt = path;
     return newImg;
 }
 
@@ -40,11 +42,10 @@ const app = () => {
     const divs = document.querySelectorAll("body > div:has(h2):has(img)");
     // obtengo los elementos hijos
     const h2s = Array.from(divs).map((div) => getFirstChildByType(div, "h2"));
-    const images = Array.from(divs).map((div) =>
-        getFirstChildByType(div, "img")
-    );
+    const images = Array.from(divs).map((div) => getFirstChildByType(div, "img"));
 
     loadImages(images);
+    loadH2Styles(h2s);
 };
 
 document.addEventListener("DOMContentLoaded", app);

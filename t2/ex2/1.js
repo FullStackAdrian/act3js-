@@ -1,4 +1,3 @@
-const testDiv = document.getElementById("test");
 const imgsPaths = ["img/gnu.jpg", "img/gnulinux.jpg", "img/linux.jpg"];
 
 //#region  utils
@@ -17,20 +16,54 @@ function getFirstChildByType(element, type) {
 }
 
 function turnVisibilityFromElement(element, i) {
-    const visibility = { 0: "visible ", 1: "hidden", status: 0 };
+    const visibility = { 0: "visible ", 1: "hidden" };
     element.setAttribute("style", "visibility:" + visibility[i] + ";");
-    return visibility;
 }
 
 //#endregion
 
-//#region doc 
+//#region doc
 
-function loadDiv(div) {
-    div.addEventListener("click", () => {
-        clickOnContainer(div);
+function clickOnContainer() {
+    alert("cal clickar a sobre l'imatge");
+}
+
+function loadDivs(divs) {
+    const newDivs = divs.map((div) => {
+        div.addEventListener("click", (event) => {
+            if (!event.target.closest("img")) {
+                clickOnContainer();
+            }
+        });
+        return div;
     });
-    return div;
+    return newDivs;
+}
+
+function createPShowImgs(body, images) {
+    const pImatges = getFirstChildByType(body, "p");
+    const pShowImgs = document.createElement("p");
+    const visibility = { status: 0 };
+
+    pShowImgs.textContent = "Mostrar totes";
+
+    pShowImgs.addEventListener("click", () => {
+        turnImagesVisible(images);
+        turnVisibility();
+    });
+    
+    function turnVisibility() {
+        if (visibility.status == 0) {
+            visibility.status = 1; 
+        }else {
+            visibility.status = 0;
+        }
+        turnVisibilityFromElement(pShowImgs, visibility.status);
+    }
+
+    turnVisibility();
+    body.insertBefore(pShowImgs, pImatges);
+    return { pShowImgs, turnVisibility, visibility };
 }
 
 function loadH2Styles(h2s) {
@@ -48,9 +81,15 @@ function createRandomImg() {
     const startingPathIndex = random(imgsPaths.length);
     const visibility = { status: 0 };
 
+    const visibilityEvent = new CustomEvent("visibilityEvent", {
+        detail: { img: newImg, visibility },
+        bubbles: true
+    });
+
     function turnVisibility(i) {
         turnVisibilityFromElement(newImg, i);
         visibility.status = i;
+        dispatchEvent(visibilityEvent);
     }
 
     function update(newIndex) {
@@ -98,26 +137,22 @@ function turnImagesVisible(imgs) {
 //#region  app
 
 const app = () => {
-    // obtengo los elementos relevantes.
+    // obtengo y cargo los elementos relevantes.
     const body = document.querySelector("body");
-    const contentDivs = document.querySelectorAll("body > div:has(h2):has(img)");
-    const h2s = Array.from(contentDivs).map((div) => getFirstChildByType(div, "h2"));
-
-    // obtengo y cargo mis obj img
+    const contentDivs = loadDivs(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
     const images = loadImages(Array.from(contentDivs).map((div) => getFirstChildByType(div, "img")));
+    const h2s = Array.from(contentDivs).map((div) => getFirstChildByType(div, "h2"));
 
     loadH2Styles(h2s);
 
     //  p mostrar todas las imagenes
-    const pImatges = getFirstChildByType(body, "p");
-    const pShowImgs = document.createElement("p");
-    pShowImgs.textContent = "Mostrar totes";
-    pShowImgs.addEventListener("click", () => {
-        turnImagesVisible(images);
+    const pShowImgs = createPShowImgs(body, images);
+    window.addEventListener("visibilityEvent", (e) => {
+        if (pShowImgs.visibility.status !== 0) {
+            pShowImgs.turnVisibility();
+        }
     });
-    body.insertBefore(pShowImgs, pImatges);
 
-    // click al contenidor
 };
 
 //#endregion

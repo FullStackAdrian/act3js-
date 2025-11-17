@@ -15,7 +15,7 @@ function findFirstChild(element, type) {
     }
 }
 
-// controla la visibilidad de un elemento 
+// controla la visibilidad de un elemento
 function setVisibility(element, i) {
     const visibility = { 0: "visible ", 1: "hidden" };
     element.setAttribute("style", "visibility:" + visibility[i] + ";");
@@ -24,6 +24,8 @@ function setVisibility(element, i) {
 //#endregion
 
 //#region doc
+const visibilityList = document.createElement("ul");
+visibilityList.textContent = "lista de invisibles";
 
 function warnClickOnContainer() {
     alert("cal clickar a sobre l'imatge");
@@ -47,7 +49,7 @@ function createToggleAllImagesControl(body, images) {
     const pImgs = findFirstChild(body, "p");
     const toggleAllImagesElement = document.createElement("p");
     const visibilityState = { status: 0 };
-    
+
     function toggleVisibility() {
         if (visibilityState.status == 0) {
             visibilityState.status = 1;
@@ -56,14 +58,14 @@ function createToggleAllImagesControl(body, images) {
         }
         setVisibility(toggleAllImagesElement, visibilityState.status);
     }
-    
+
     toggleAllImagesElement.addEventListener("click", () => {
         showAllImgs(images);
         toggleVisibility();
     });
-    
+
     toggleVisibility();
-    
+
     toggleAllImagesElement.textContent = "Mostrar totes";
     body.insertBefore(toggleAllImagesElement, pImgs);
 
@@ -74,6 +76,19 @@ function applyHeadingStyles(h2s) {
     h2s.forEach((h2) => {
         h2.setAttribute("style", "color: #aaaaff");
     });
+}
+
+function appendToList(img, toggleVisibility) {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    li.textContent = img.src;
+    btn.textContent = "mostrar";
+    btn.onclick = function () {
+        toggleVisibility(0);
+        this.parentElement.remove();
+    };
+    li.appendChild(btn);
+    visibilityList.appendChild(li);
 }
 
 //#endregion
@@ -88,7 +103,7 @@ function createImageController() {
 
     // comparte el estado de la visibilidad como evento
     const visibilityEvent = new CustomEvent("visibilityEvent", {
-        detail: { img: imgElement, visibility: visibilityState },
+        detail: { img: imgElement, toggleVisibility, visibilityState },
         bubbles: true,
     });
 
@@ -99,7 +114,7 @@ function createImageController() {
         dispatchEvent(visibilityEvent);
     }
 
-    // actualiza el src y alt de la imagen 
+    // actualiza el src y alt de la imagen
     function update(newIndex) {
         imgElement.dataset.pathIndex = newIndex;
         imgElement.src = IMG_PATHS[imgElement.dataset.pathIndex];
@@ -146,12 +161,12 @@ function showAllImgs(imgs) {
 //#region  app
 
 const initApp = () => {
-    // obtengo body 
+    // obtengo body
     const body = document.querySelector("body");
-    // inicializo y obtengo los controladores. 
+    // inicializo y obtengo los controladores.
     const imageContainers = initContainers(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
-    // De cada div obtengo el hijo de tipo deseado , lo hago array e inicializo u obtengo. 
-    // por que ? --> Es mas rapido por que ya tienes los divs en memoria, no tienes que buscar en el dom (lento) 
+    // De cada div obtengo el hijo de tipo deseado , lo hago array e inicializo u obtengo.
+    // por que ? --> Es mas rapido por que ya tienes los divs en memoria, no tienes que buscar en el dom (lento)
     const imagesControllers = initImagesControllers(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
     const headings = Array.from(imageContainers).map((div) => findFirstChild(div, "h2"));
 
@@ -159,10 +174,14 @@ const initApp = () => {
 
     const toggleImagesPButton = createToggleAllImagesControl(body, imagesControllers);
     window.addEventListener("visibilityEvent", (e) => {
-        if (toggleImagesPButton.visibilityState.status !== 0) {
-            toggleImagesPButton.toggleVisibility();
+        if (e.detail.visibilityState.status !== 0) {
+            appendToList(e.detail.img, e.detail.toggleVisibility);
+            if (toggleImagesPButton.visibility.status !== 0) {
+                toggleImagesPButton.toggleVisibility();
+            }
         }
     });
+    body.appendChild(visibilityList);
 };
 
 //#endregion

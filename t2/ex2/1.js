@@ -42,28 +42,28 @@ function initContainers(divs) {
 
 function createToggleAllImagesControl(body, images) {
     const pImgs = findFirstChild(body, "p");
-    const toggleAllImgsEl = document.createElement("p");
+    const toggleAllImagesElement = document.createElement("p");
     const visibilityState = { status: 0 };
 
-    toggleAllImgsEl.textContent = "Mostrar totes";
+    toggleAllImagesElement.textContent = "Mostrar totes";
 
-    toggleAllImgsEl.addEventListener("click", () => {
+    toggleAllImagesElement.addEventListener("click", () => {
         showAllImgs(images);
         toggleVisibility();
     });
-    
+
     function toggleVisibility() {
         if (visibilityState.status == 0) {
-            visibilityState.status = 1; 
-        }else {
+            visibilityState.status = 1;
+        } else {
             visibilityState.status = 0;
         }
-        setVisibility(toggleAllImgsEl, visibilityState.status);
+        setVisibility(toggleAllImagesElement, visibilityState.status);
     }
 
     toggleVisibility();
-    body.insertBefore(toggleAllImgsEl, pImgs);
-    return {  toggleAllImgsP: toggleAllImgsEl, turnVisibility: toggleVisibility,  visibilityState };
+    body.insertBefore(toggleAllImagesElement, pImgs);
+    return { toggleAllImagesElement, toggleVisibility: toggleVisibility, visibilityState };
 }
 
 function applyHeadingStyles(h2s) {
@@ -83,10 +83,10 @@ function createImageController() {
 
     const visibilityEvent = new CustomEvent("visibilityEvent", {
         detail: { img: imgElement, visibility: visibilityState },
-        bubbles: true
+        bubbles: true,
     });
 
-    function turnVisibility(i) {
+    function toggleVisibility(i) {
         setVisibility(imgElement, i);
         visibilityState.status = i;
         dispatchEvent(visibilityEvent);
@@ -106,29 +106,28 @@ function createImageController() {
 
     update(startingPathIndex);
 
-    return {  imgElement, update, next, turnVisibility,  visibilityState };
+    return { imgElement, update, next, toggleVisibility, visibilityState };
 }
 
 // carga los controladores en las imagenes  &  return array de estos
-function initImgsControllers(imgs) {
-    const newImgs = imgs.map((img) => {
+function initImagesControllers(imgs) {
+    const imagesControllers = imgs.map((img) => {
         const imgController = createImageController();
         imgController.imgElement.addEventListener("click", () => {
             imgController.next();
         });
         imgController.imgElement.addEventListener("dblclick", () => {
-            imgController.turnVisibility(1);
+            imgController.toggleVisibility(1);
         });
         img.replaceWith(imgController.imgElement);
-        imgController.imgElement = img;
         return imgController;
     });
-    return newImgs;
+    return imagesControllers;
 }
 
 function showAllImgs(imgs) {
     imgs.forEach((img) => {
-        img.turnVisibility(0);
+        img.toggleVisibility(0);
     });
 }
 
@@ -137,22 +136,19 @@ function showAllImgs(imgs) {
 //#region  app
 
 const initApp = () => {
-    // obtengo y cargo los elementos relevantes.
     const body = document.querySelector("body");
     const imageContainers = initContainers(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
-    const images = initImgsControllers(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
+    const imagesControllers = initImagesControllers(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
     const headings = Array.from(imageContainers).map((div) => findFirstChild(div, "h2"));
 
     applyHeadingStyles(headings);
 
-    //  p mostrar todas las imagenes
-    const toggleImagesPButton = createToggleAllImagesControl(body, images);
+    const toggleImagesPButton = createToggleAllImagesControl(body, imagesControllers);
     window.addEventListener("visibilityEvent", (e) => {
         if (toggleImagesPButton.visibilityState.status !== 0) {
-            toggleImagesPButton.turnVisibility();
+            toggleImagesPButton.toggleVisibility();
         }
     });
-
 };
 
 //#endregion

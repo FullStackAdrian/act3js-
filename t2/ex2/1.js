@@ -34,21 +34,24 @@ function createRandomImg() {
     return { img: newImg, update, turnVisibility};
 }
 
-// carga las imagenes aleatorias y sus eventos
-function loadImages(images) {
-    images.forEach((img) => {
-        const newImg = createRandomImg();
-        newImg.img.addEventListener("click", () => {
+// carga de imagenes con sus eventos &  return array de estas 
+ function loadImages(images) {
+    const newImgaes = images.map((img) => {
+        const randImg = createRandomImg();
+        randImg.img.addEventListener("click", () => {
             // un pequeño control para que la ruta aleatoria no sea la existente
             let newPath = random(3);
-            while ( newImg.img.dataset.pathIndex == newPath) {
+            while ( randImg.img.dataset.pathIndex == newPath) {
                 newPath = random(3);
             }
-            newImg.update(newPath);
+            randImg.update(newPath);
             });
-        newImg.img.addEventListener("dblclick", () => { newImg.turnVisibility(1) });
-        img.replaceWith(newImg.img);
+        randImg.img.addEventListener("dblclick", () => { randImg.turnVisibility(1) });
+        img.replaceWith(randImg.img);
+        randImg.img = img;
+        return randImg;
     });
+    return newImgaes;
 }
 
 function loadH2Styles(h2s) {
@@ -62,11 +65,10 @@ function loadH2Styles(h2s) {
 const app = () => {
     // obtengo los divs con contenido
     const divs = document.querySelectorAll("body > div:has(h2):has(img)");
-    // obtengo los elementos hijos
+    // obtengo los h2
     const h2s = Array.from(divs).map((div) => getFirstChildByType(div, "h2"));
-    const images = Array.from(divs).map((div) => getFirstChildByType(div, "img"));
-
-    loadImages(images);
+    // obtengo los obj randImg ya cargados
+    const images = loadImages(Array.from(divs).map((div) => getFirstChildByType(div, "img")));
     loadH2Styles(h2s);
 };
 

@@ -15,6 +15,7 @@ function findFirstChild(element, type) {
     }
 }
 
+// controla la visibilidad de un elemento 
 function setVisibility(element, i) {
     const visibility = { 0: "visible ", 1: "hidden" };
     element.setAttribute("style", "visibility:" + visibility[i] + ";");
@@ -28,6 +29,7 @@ function warnClickOnContainer() {
     alert("cal clickar a sobre l'imatge");
 }
 
+// carga el evento para la alerta de clickar sobre l'imatge
 function initContainers(divs) {
     const newDivs = divs.map((div) => {
         div.addEventListener("click", (event) => {
@@ -40,18 +42,12 @@ function initContainers(divs) {
     return newDivs;
 }
 
+// devuelve closure del p para mostrar las imagenes y funciones para controlar.
 function createToggleAllImagesControl(body, images) {
     const pImgs = findFirstChild(body, "p");
     const toggleAllImagesElement = document.createElement("p");
     const visibilityState = { status: 0 };
-
-    toggleAllImagesElement.textContent = "Mostrar totes";
-
-    toggleAllImagesElement.addEventListener("click", () => {
-        showAllImgs(images);
-        toggleVisibility();
-    });
-
+    
     function toggleVisibility() {
         if (visibilityState.status == 0) {
             visibilityState.status = 1;
@@ -60,10 +56,18 @@ function createToggleAllImagesControl(body, images) {
         }
         setVisibility(toggleAllImagesElement, visibilityState.status);
     }
-
+    
+    toggleAllImagesElement.addEventListener("click", () => {
+        showAllImgs(images);
+        toggleVisibility();
+    });
+    
     toggleVisibility();
+    
+    toggleAllImagesElement.textContent = "Mostrar totes";
     body.insertBefore(toggleAllImagesElement, pImgs);
-    return { toggleAllImagesElement, toggleVisibility: toggleVisibility, visibilityState };
+
+    return { toggleAllImagesElement, toggleVisibility, visibilityState };
 }
 
 function applyHeadingStyles(h2s) {
@@ -76,28 +80,33 @@ function applyHeadingStyles(h2s) {
 
 //#region  images
 
+// devuelve un closure con las imagenes y funciones para controlar la imagen.
 function createImageController() {
     const imgElement = new Image(125, 125);
     const startingPathIndex = getRandomInt(IMG_PATHS.length);
     const visibilityState = { status: 0 };
 
+    // comparte el estado de la visibilidad como evento
     const visibilityEvent = new CustomEvent("visibilityEvent", {
         detail: { img: imgElement, visibility: visibilityState },
         bubbles: true,
     });
 
+    // cambia la visibilidad a el estado indicado y activa el evento que comparte el estado
     function toggleVisibility(i) {
         setVisibility(imgElement, i);
         visibilityState.status = i;
         dispatchEvent(visibilityEvent);
     }
 
+    // actualiza el src y alt de la imagen 
     function update(newIndex) {
         imgElement.dataset.pathIndex = newIndex;
         imgElement.src = IMG_PATHS[imgElement.dataset.pathIndex];
         imgElement.alt = IMG_PATHS[imgElement.dataset.pathIndex];
     }
 
+    // pasa la siguiente imagen
     function next() {
         let current = Number(imgElement.dataset.pathIndex) || 0;
         let newIndex = (current + 1) % IMG_PATHS.length;
@@ -109,9 +118,9 @@ function createImageController() {
     return { imgElement, update, next, toggleVisibility, visibilityState };
 }
 
-// carga los controladores en las imagenes  &  return array de estos
-function initImagesControllers(imgs) {
-    const imagesControllers = imgs.map((img) => {
+// Crea controladores de imagen, reemplaza los elementos HTML y asigna eventos. Finalmente devuelve array de los controladores.
+function initImagesControllers(images) {
+    const imagesControllers = images.map((img) => {
         const imgController = createImageController();
         imgController.imgElement.addEventListener("click", () => {
             imgController.next();
@@ -125,6 +134,7 @@ function initImagesControllers(imgs) {
     return imagesControllers;
 }
 
+// activa la visibilidad de todas las imagenes.
 function showAllImgs(imgs) {
     imgs.forEach((img) => {
         img.toggleVisibility(0);
@@ -136,8 +146,12 @@ function showAllImgs(imgs) {
 //#region  app
 
 const initApp = () => {
+    // obtengo body 
     const body = document.querySelector("body");
+    // inicializo y obtengo los controladores. 
     const imageContainers = initContainers(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
+    // De cada div obtengo el hijo de tipo deseado , lo hago array e inicializo u obtengo. 
+    // por que ? --> Es mas rapido por que ya tienes los divs en memoria, no tienes que buscar en el dom (lento) 
     const imagesControllers = initImagesControllers(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
     const headings = Array.from(imageContainers).map((div) => findFirstChild(div, "h2"));
 

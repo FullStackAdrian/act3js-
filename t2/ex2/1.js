@@ -42,31 +42,31 @@ function initContainers(divs) {
 
 function createToggleAllImagesControl(body, images) {
     const pImgs = findFirstChild(body, "p");
-    const toggleAllImgsP = document.createElement("p");
-    const visibility = { status: 0 };
+    const toggleAllImgsEl = document.createElement("p");
+    const visibilityState = { status: 0 };
 
-    toggleAllImgsP.textContent = "Mostrar totes";
+    toggleAllImgsEl.textContent = "Mostrar totes";
 
-    toggleAllImgsP.addEventListener("click", () => {
+    toggleAllImgsEl.addEventListener("click", () => {
         showAllImgs(images);
-        turnVisibility();
+        toggleVisibility();
     });
     
-    function turnVisibility() {
-        if (visibility.status == 0) {
-            visibility.status = 1; 
+    function toggleVisibility() {
+        if (visibilityState.status == 0) {
+            visibilityState.status = 1; 
         }else {
-            visibility.status = 0;
+            visibilityState.status = 0;
         }
-        setVisibility(toggleAllImgsP, visibility.status);
+        setVisibility(toggleAllImgsEl, visibilityState.status);
     }
 
-    turnVisibility();
-    body.insertBefore(toggleAllImgsP, pImgs);
-    return {  toggleAllImgsP, turnVisibility, visibility };
+    toggleVisibility();
+    body.insertBefore(toggleAllImgsEl, pImgs);
+    return {  toggleAllImgsP: toggleAllImgsEl, turnVisibility: toggleVisibility,  visibilityState };
 }
 
-function stylingH2eadings(h2s) {
+function applyHeadingStyles(h2s) {
     h2s.forEach((h2) => {
         h2.setAttribute("style", "color: #aaaaff");
     });
@@ -76,51 +76,51 @@ function stylingH2eadings(h2s) {
 
 //#region  images
 
-function createRandomImg() {
-    const newImg = new Image(125, 125);
+function createImageController() {
+    const imgElement = new Image(125, 125);
     const startingPathIndex = getRandomInt(IMG_PATHS.length);
-    const visibility = { status: 0 };
+    const visibilityState = { status: 0 };
 
     const visibilityEvent = new CustomEvent("visibilityEvent", {
-        detail: { img: newImg, visibility },
+        detail: { img: imgElement, visibility: visibilityState },
         bubbles: true
     });
 
     function turnVisibility(i) {
-        setVisibility(newImg, i);
-        visibility.status = i;
+        setVisibility(imgElement, i);
+        visibilityState.status = i;
         dispatchEvent(visibilityEvent);
     }
 
     function update(newIndex) {
-        newImg.dataset.pathIndex = newIndex;
-        newImg.src = IMG_PATHS[newImg.dataset.pathIndex];
-        newImg.alt = IMG_PATHS[newImg.dataset.pathIndex];
+        imgElement.dataset.pathIndex = newIndex;
+        imgElement.src = IMG_PATHS[imgElement.dataset.pathIndex];
+        imgElement.alt = IMG_PATHS[imgElement.dataset.pathIndex];
     }
 
     function next() {
-        let current = Number(newImg.dataset.pathIndex) || 0;
+        let current = Number(imgElement.dataset.pathIndex) || 0;
         let newIndex = (current + 1) % IMG_PATHS.length;
         update(newIndex);
     }
 
     update(startingPathIndex);
 
-    return { img: newImg, update, next, turnVisibility, visibility };
+    return {  imgElement, update, next, turnVisibility,  visibilityState };
 }
 
-// carga de imagenes con sus eventos &  return array de estas
-function initImgs(imgs) {
+// carga los controladores en las imagenes  &  return array de estos
+function initImgsControllers(imgs) {
     const newImgs = imgs.map((img) => {
-        const imgController = createRandomImg();
-        imgController.img.addEventListener("click", () => {
+        const imgController = createImageController();
+        imgController.imgElement.addEventListener("click", () => {
             imgController.next();
         });
-        imgController.img.addEventListener("dblclick", () => {
+        imgController.imgElement.addEventListener("dblclick", () => {
             imgController.turnVisibility(1);
         });
-        img.replaceWith(imgController.img);
-        imgController.img = img;
+        img.replaceWith(imgController.imgElement);
+        imgController.imgElement = img;
         return imgController;
     });
     return newImgs;
@@ -140,16 +140,16 @@ const initApp = () => {
     // obtengo y cargo los elementos relevantes.
     const body = document.querySelector("body");
     const imageContainers = initContainers(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
-    const images = initImgs(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
+    const images = initImgsControllers(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
     const headings = Array.from(imageContainers).map((div) => findFirstChild(div, "h2"));
 
-    stylingH2eadings(headings);
+    applyHeadingStyles(headings);
 
     //  p mostrar todas las imagenes
-    const pShowImgs = createToggleAllImagesControl(body, images);
+    const toggleImagesPButton = createToggleAllImagesControl(body, images);
     window.addEventListener("visibilityEvent", (e) => {
-        if (pShowImgs.visibility.status !== 0) {
-            pShowImgs.turnVisibility();
+        if (toggleImagesPButton.visibilityState.status !== 0) {
+            toggleImagesPButton.turnVisibility();
         }
     });
 

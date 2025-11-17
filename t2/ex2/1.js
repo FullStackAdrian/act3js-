@@ -1,13 +1,13 @@
-const imgsPaths = ["img/gnu.jpg", "img/gnulinux.jpg", "img/linux.jpg"];
+const IMG_PATHS = ["img/gnu.jpg", "img/gnulinux.jpg", "img/linux.jpg"];
 
 //#region  utils
 
-function random(number) {
+function getRandomInt(number) {
     return Math.floor(Math.random() * number);
 }
 
 // devuelve el primer hijo de dentro de un elemento que coincida con el tipo
-function getFirstChildByType(element, type) {
+function findFirstChild(element, type) {
     for (const child of element.children) {
         if (child.tagName.toLowerCase() === type.toLowerCase()) {
             return child;
@@ -15,7 +15,7 @@ function getFirstChildByType(element, type) {
     }
 }
 
-function turnVisibilityFromElement(element, i) {
+function setVisibility(element, i) {
     const visibility = { 0: "visible ", 1: "hidden" };
     element.setAttribute("style", "visibility:" + visibility[i] + ";");
 }
@@ -24,15 +24,15 @@ function turnVisibilityFromElement(element, i) {
 
 //#region doc
 
-function clickOnContainer() {
+function warnClickOnContainer() {
     alert("cal clickar a sobre l'imatge");
 }
 
-function loadDivs(divs) {
+function initContainers(divs) {
     const newDivs = divs.map((div) => {
         div.addEventListener("click", (event) => {
             if (!event.target.closest("img")) {
-                clickOnContainer();
+                warnClickOnContainer();
             }
         });
         return div;
@@ -40,15 +40,15 @@ function loadDivs(divs) {
     return newDivs;
 }
 
-function createPShowImgs(body, images) {
-    const pImatges = getFirstChildByType(body, "p");
-    const pShowImgs = document.createElement("p");
+function createToggleAllImagesControl(body, images) {
+    const pImgs = findFirstChild(body, "p");
+    const toggleAllImgsP = document.createElement("p");
     const visibility = { status: 0 };
 
-    pShowImgs.textContent = "Mostrar totes";
+    toggleAllImgsP.textContent = "Mostrar totes";
 
-    pShowImgs.addEventListener("click", () => {
-        turnImagesVisible(images);
+    toggleAllImgsP.addEventListener("click", () => {
+        showAllImgs(images);
         turnVisibility();
     });
     
@@ -58,15 +58,15 @@ function createPShowImgs(body, images) {
         }else {
             visibility.status = 0;
         }
-        turnVisibilityFromElement(pShowImgs, visibility.status);
+        setVisibility(toggleAllImgsP, visibility.status);
     }
 
     turnVisibility();
-    body.insertBefore(pShowImgs, pImatges);
-    return { pShowImgs, turnVisibility, visibility };
+    body.insertBefore(toggleAllImgsP, pImgs);
+    return {  toggleAllImgsP, turnVisibility, visibility };
 }
 
-function loadH2Styles(h2s) {
+function stylingH2eadings(h2s) {
     h2s.forEach((h2) => {
         h2.setAttribute("style", "color: #aaaaff");
     });
@@ -78,7 +78,7 @@ function loadH2Styles(h2s) {
 
 function createRandomImg() {
     const newImg = new Image(125, 125);
-    const startingPathIndex = random(imgsPaths.length);
+    const startingPathIndex = getRandomInt(IMG_PATHS.length);
     const visibility = { status: 0 };
 
     const visibilityEvent = new CustomEvent("visibilityEvent", {
@@ -87,20 +87,20 @@ function createRandomImg() {
     });
 
     function turnVisibility(i) {
-        turnVisibilityFromElement(newImg, i);
+        setVisibility(newImg, i);
         visibility.status = i;
         dispatchEvent(visibilityEvent);
     }
 
     function update(newIndex) {
         newImg.dataset.pathIndex = newIndex;
-        newImg.src = imgsPaths[newImg.dataset.pathIndex];
-        newImg.alt = imgsPaths[newImg.dataset.pathIndex];
+        newImg.src = IMG_PATHS[newImg.dataset.pathIndex];
+        newImg.alt = IMG_PATHS[newImg.dataset.pathIndex];
     }
 
     function next() {
         let current = Number(newImg.dataset.pathIndex) || 0;
-        let newIndex = (current + 1) % imgsPaths.length;
+        let newIndex = (current + 1) % IMG_PATHS.length;
         update(newIndex);
     }
 
@@ -110,23 +110,23 @@ function createRandomImg() {
 }
 
 // carga de imagenes con sus eventos &  return array de estas
-function loadImages(imgs) {
+function initImgs(imgs) {
     const newImgs = imgs.map((img) => {
-        const randImg = createRandomImg();
-        randImg.img.addEventListener("click", () => {
-            randImg.next();
+        const imgController = createRandomImg();
+        imgController.img.addEventListener("click", () => {
+            imgController.next();
         });
-        randImg.img.addEventListener("dblclick", () => {
-            randImg.turnVisibility(1);
+        imgController.img.addEventListener("dblclick", () => {
+            imgController.turnVisibility(1);
         });
-        img.replaceWith(randImg.img);
-        randImg.img = img;
-        return randImg;
+        img.replaceWith(imgController.img);
+        imgController.img = img;
+        return imgController;
     });
     return newImgs;
 }
 
-function turnImagesVisible(imgs) {
+function showAllImgs(imgs) {
     imgs.forEach((img) => {
         img.turnVisibility(0);
     });
@@ -136,17 +136,17 @@ function turnImagesVisible(imgs) {
 
 //#region  app
 
-const app = () => {
+const initApp = () => {
     // obtengo y cargo los elementos relevantes.
     const body = document.querySelector("body");
-    const contentDivs = loadDivs(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
-    const images = loadImages(Array.from(contentDivs).map((div) => getFirstChildByType(div, "img")));
-    const h2s = Array.from(contentDivs).map((div) => getFirstChildByType(div, "h2"));
+    const imageContainers = initContainers(Array.from(document.querySelectorAll("body > div:has(h2):has(img)")));
+    const images = initImgs(Array.from(imageContainers).map((div) => findFirstChild(div, "img")));
+    const headings = Array.from(imageContainers).map((div) => findFirstChild(div, "h2"));
 
-    loadH2Styles(h2s);
+    stylingH2eadings(headings);
 
     //  p mostrar todas las imagenes
-    const pShowImgs = createPShowImgs(body, images);
+    const pShowImgs = createToggleAllImagesControl(body, images);
     window.addEventListener("visibilityEvent", (e) => {
         if (pShowImgs.visibility.status !== 0) {
             pShowImgs.turnVisibility();
@@ -157,4 +157,4 @@ const app = () => {
 
 //#endregion
 
-document.addEventListener("DOMContentLoaded", app);
+document.addEventListener("DOMContentLoaded", initApp);

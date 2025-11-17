@@ -1,7 +1,7 @@
 const testDiv = document.getElementById("test");
 const imgsPaths = ["img/gnu.jpg", "img/gnulinux.jpg", "img/linux.jpg"];
 
-// devuelve el primer hijo que coincida con el tipo
+// devuelve el primer hijo de dentro de un elemento que coincida con el tipo
 function getFirstChildByType(element, type) {
     for (const child of element.children) {
         if (child.tagName.toLowerCase() === type.toLowerCase()) {
@@ -16,11 +16,12 @@ function random(number) {
 
 function createRandomImg() {
     const newImg = new Image(125, 125);
-    const startingPathIndex = random(3);
-    const visibility = { 0: "visible ", 1: "hidden" };
+    const startingPathIndex = random(imgsPaths.length);
+    const visibility = { 0: "visible ", 1: "hidden", status: 0};
 
     function turnVisibility(i) {
         newImg.setAttribute("style", "visibility:" + visibility[i] + ";");
+        visibility.status = i;
     }
 
     function update(newIndex) {
@@ -37,7 +38,7 @@ function createRandomImg() {
 
     update(startingPathIndex);
 
-    return { img: newImg, update, next, turnVisibility };
+    return { img: newImg, update, next, turnVisibility, visibility };
 }
 
 // carga de imagenes con sus eventos &  return array de estas 
@@ -55,6 +56,25 @@ function loadImages(images) {
     return newImgaes;
 }
 
+function turnAllImagesVisible(imgs){
+    imgs.forEach(img => {
+        img.turnVisibility(0);
+    });
+}
+
+function clickOnContainer(div) {
+    const pClickContainer = document.createElement("p");
+    pClickContainer.textContent = "cal clicar sobre la imatge";
+    div.appendChild(pClickContainer);
+}
+
+function loadDiv(div){
+    div.addEventListener("click", () => {
+        clickOnContainer(div);
+    });
+    return div;
+}
+
 function loadH2Styles(h2s) {
     h2s.forEach((h2) => {
         h2.setAttribute("style", "color: #aaaaff");
@@ -64,13 +84,27 @@ function loadH2Styles(h2s) {
 // app
 
 const app = () => {
-    // obtengo los divs con contenido
+    // obtengo los elementos relevantes.
+    const body = document.querySelector("body");
     const contentDivs = document.querySelectorAll("body > div:has(h2):has(img)");
-    // obtengo los h2
     const h2s = Array.from(contentDivs).map((div) => getFirstChildByType(div, "h2"));
-    // obtengo los obj randImg ya cargados
+    
+    // obtengo y cargo mis obj img 
     const images = loadImages(Array.from(contentDivs).map((div) => getFirstChildByType(div, "img")));
+    
     loadH2Styles(h2s);
+    
+    //  p mostrar todas las imagenes 
+    const pImatges = getFirstChildByType(body, "p");
+    const pShowImgs = document.createElement("p");
+    pShowImgs.textContent = "Mostrar totes";
+    pShowImgs.addEventListener("click", () => {
+        turnAllImagesVisible(images);
+    });
+    body.insertBefore( pShowImgs, pImatges)
+    
+    // click al contenidor
+    
 };
 
 document.addEventListener("DOMContentLoaded", app);

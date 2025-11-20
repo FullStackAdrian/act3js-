@@ -78,7 +78,7 @@ function applyHeadingStyles(h2s) {
     });
 }
 
-function appendToList(img, toggleVisibility) {
+function appendInvisibleImgToList(img, toggleVisibility) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     li.textContent = img.src;
@@ -175,8 +175,8 @@ const initApp = () => {
     const toggleImagesPButton = createToggleAllImagesControl(body, imagesControllers);
     window.addEventListener("visibilityEvent", (e) => {
         if (e.detail.visibilityState.status !== 0) {
-            appendToList(e.detail.img, e.detail.toggleVisibility);
-            if (toggleImagesPButton.visibility.status !== 0) {
+            appendInvisibleImgToList(e.detail.img, e.detail.toggleVisibility);
+            if (toggleImagesPButton.visibilityState.status !== 0) {
                 toggleImagesPButton.toggleVisibility();
             }
         }

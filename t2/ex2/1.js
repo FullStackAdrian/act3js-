@@ -78,7 +78,7 @@ function applyHeadingStyles(h2s) {
     });
 }
 
-function appendInvisibleImgToList(img, toggleVisibility) {
+function appendInvisibleImgToList(img, toggleVisibility, toggleAllImagesVisiblityControl) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     li.textContent = img.src;
@@ -86,9 +86,19 @@ function appendInvisibleImgToList(img, toggleVisibility) {
     btn.onclick = function () {
         toggleVisibility(0);
         this.parentElement.remove();
+        console.log(visibilityList.children.length === 0);
+        if (visibilityList.children.length === 0) {
+            toggleAllImagesVisiblityControl.toggleVisibility();
+        }
     };
     li.appendChild(btn);
     visibilityList.appendChild(li);
+}
+
+function cleanInvisivleImgList() {
+    while (visibilityList.firstChild) {
+        visibilityList.removeChild(visibilityList.firstChild);
+    };
 }
 
 //#endregion
@@ -151,6 +161,7 @@ function initImagesControllers(images) {
 
 // activa la visibilidad de todas las imagenes.
 function showAllImgs(imgs) {
+    cleanInvisivleImgList();
     imgs.forEach((img) => {
         img.toggleVisibility(0);
     });
@@ -172,12 +183,12 @@ const initApp = () => {
 
     applyHeadingStyles(headings);
 
-    const toggleImagesPButton = createToggleAllImagesControl(body, imagesControllers);
+    const toggleAllImagesVisiblityControl = createToggleAllImagesControl(body, imagesControllers);
     window.addEventListener("visibilityEvent", (e) => {
         if (e.detail.visibilityState.status !== 0) {
-            appendInvisibleImgToList(e.detail.img, e.detail.toggleVisibility);
-            if (toggleImagesPButton.visibilityState.status !== 0) {
-                toggleImagesPButton.toggleVisibility();
+            appendInvisibleImgToList(e.detail.img, e.detail.toggleVisibility, toggleAllImagesVisiblityControl);
+            if (toggleAllImagesVisiblityControl.visibilityState.status !== 0) {
+                toggleAllImagesVisiblityControl.toggleVisibility();
             }
         }
     });

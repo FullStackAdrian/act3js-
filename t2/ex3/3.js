@@ -1,6 +1,4 @@
-let errors = [];
-
-//#region  form stuff
+//#region  form functions
 function getData(form, keys) {
     const fd = new FormData(form);
     const values = [...fd.values()];
@@ -15,7 +13,7 @@ function getData(form, keys) {
 function validate(data, validationRules) {
     Object.values(data).forEach((value, key) => {
         if (!validationRules[keys[key]].validate(value)) {
-            errors.push(validationRules[keys[key]].message);
+            ulErrorController.appendItemToList(validationRules[keys[key]].message);
         }
     });
 }
@@ -75,11 +73,16 @@ const validationRules = {
     },
 };
 
+// get taskList and  error divs
+const divLListaTascas = document.getElementById("llistaTasques");
 const divErrors = document.getElementById("errors");
-const ulErrorController = listController(document.createElement("ul"));
-divErrors.appendChild(ulErrorController.ul);
 
+// create the unordered lists controller
 const ulTascaController = listController(document.createElement("ul"));
+const ulErrorController = listController(document.createElement("ul"));
+
+divLListaTascas.appendChild(ulTascaController.ul);
+divErrors.appendChild(ulErrorController.ul);
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -91,16 +94,16 @@ form.addEventListener("submit", (e) => {
 
     // get data and validate
     const data = getData(form, keys);
-    validate(dataBeforeValidate, validationRules);
+    validate(data, validationRules);
 
-    const liErrors = errors.length ? errors.map((err) => ulErrorController.appendItemToList(err)) : null;
+    const liErrors = errors.length ? ulErrorController.getAllLi() : null;
 
-    // if theres not errors append success message.
-    if (!liErrors) {
+    // if theres no errors append success message.
+    if (liErrors === null) {
         const pSuccessSubmit = document.createElement("p");
         pSuccessSubmit.textContent = "Formulari enviat correctament!";
         divErrors.appendChild(pSuccessSubmit);
-    }
 
-    ulTascaController.appendItemToList(data);
+        ulTascaController.appendItemToList(data);
+    }
 });

@@ -1,3 +1,5 @@
+const errors = []; 
+
 function getData(form, keys) {
     const fd = new FormData(form);
     const values = [...fd.values()];
@@ -8,3 +10,44 @@ function getData(form, keys) {
 
     return data;
 }
+
+function validate(data, validationRules) {
+    Object.entries(data).forEach( key, value => {
+        if (validationRules[key].validate(value)) {
+            errors.push(validationRules.message);
+        }
+    });
+
+}
+
+const form = document.getElementById("form-tasca");
+console.log(form);
+
+const keys = [
+    "nom_tasca",
+    "categoria_tasca",
+    "data_tasca"
+];
+
+const validationRules = {
+    nom_tasca: {
+        validate: nom => nom && nom.trim().length >= 3 && /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(nom),
+        message: "El nom és obligatori, mínim 3 caràcters i només alfabètic."
+    },
+    categoria_tasca: {
+        validate: cat => cat && cat.trim() !== "",
+        message: "Cal seleccionar una categoria."
+    },
+    data_tasca: {
+        validate: dateStr => {
+            if (!dateStr) return false;
+            const parts = dateStr.split("-");
+            if (parts.length !== 3) return false;
+            const [yyyy, mm, dd] = parts.map(Number);
+            const date = new Date(yyyy, mm - 1, dd);
+            const today = new Date();
+            return dateStr instanceof Date && !isNaN(dateStr) && dateStr >= today;
+        },
+        message: "La data és obligatòria, format DD/MM/YYYY i no pot ser anterior a l'actual."
+    }
+};

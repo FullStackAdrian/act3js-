@@ -79,6 +79,8 @@ const divErrors = document.getElementById("errors");
 const ulErrorController = listController(document.createElement("ul"));
 divErrors.appendChild(ulErrorController.ul);
 
+const ulTascaController = listController(document.createElement("ul"));
+
 form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -88,7 +90,7 @@ form.addEventListener("submit", (e) => {
     removeAllChildrens(divErrors);
 
     // get data and validate
-    const dataBeforeValidate = getData(form, keys);
+    const data = getData(form, keys);
     validate(dataBeforeValidate, validationRules);
 
     const liErrors = errors.length ? errors.map((err) => ulErrorController.appendItemToList(err)) : null;
@@ -99,4 +101,6 @@ form.addEventListener("submit", (e) => {
         pSuccessSubmit.textContent = "Formulari enviat correctament!";
         divErrors.appendChild(pSuccessSubmit);
     }
+
+    ulTascaController.appendItemToList(data);
 });

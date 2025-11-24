@@ -1,4 +1,4 @@
-const errors = [];
+let errors = [];
 
 function getData(form, keys) {
     const fd = new FormData(form);
@@ -31,12 +31,12 @@ function listController(ul) {
         }
     }
     function cleanList() {
-        while (ul.fristChild) {
-            ul.removeChild(ul.fristChild);
+        while (ul.firstChild) {
+            ul.removeChild(ul.firstChild);
         }
     }
 
-    return { appendItemToList, deleteItem, cleanList };
+    return { ul, appendItemToList, deleteItem, cleanList };
 }
 
 const form = document.getElementById("form-tasca");
@@ -66,11 +66,16 @@ const validationRules = {
     },
 };
 
+const divErrors = document.getElementById("errors");
+const ulErrorController = listController(document.createElement("ul"));
+
 form.addEventListener("submit", (e) => {
+    errors = [];
+    ulErrorController.cleanList();
     e.preventDefault();
     const dataBeforeValidate = getData(form, keys);
     validate(dataBeforeValidate, validationRules);
 
-    const div = document.getElementById("errors");
-    div.innerHTML = errors.length ? `<ul>${errors.map((err) => `<li>${err}</li>`).join("")}</ul>` : `<p style="color:green">Formulari enviat correctament!</p>`;
+    divErrors.appendChild(ulErrorController.ul);
+    const liErrors = errors.length ? errors.map((err) => ulErrorController.appendItemToList(err)) : `<p style="color:green">Formulari enviat correctament!</p>`;
 });

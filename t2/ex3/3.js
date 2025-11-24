@@ -1,5 +1,6 @@
 let errors = [];
 
+//#region  form stuff
 function getData(form, keys) {
     const fd = new FormData(form);
     const values = [...fd.values()];
@@ -18,6 +19,14 @@ function validate(data, validationRules) {
         }
     });
 }
+//#endregion
+
+function removeAllChildrens(el) {
+    while (el.firstChild) {
+        el.removeChild(el.firstChild);
+    }
+}
+
 function listController(ul) {
     function appendItemToList(text) {
         const li = document.createElement("li");
@@ -31,9 +40,7 @@ function listController(ul) {
         }
     }
     function cleanList() {
-        while (ul.firstChild) {
-            ul.removeChild(ul.firstChild);
-        }
+        removeAllChildrens(ul);
     }
 
     return { ul, appendItemToList, deleteItem, cleanList };
@@ -59,8 +66,10 @@ const validationRules = {
             if (parts.length !== 3) return false;
             const [yyyy, mm, dd] = parts.map(Number);
             const date = new Date(yyyy, mm - 1, dd);
+            // if (isNaN(date)) return false;
             const today = new Date();
-            return dateStr instanceof Date && !isNaN(dateStr) && dateStr >= today;
+            today.setHours(0, 0, 0, 0);
+            return date >= today;
         },
         message: "La data és obligatòria, format DD/MM/YYYY i no pot ser anterior a l'actual.",
     },
@@ -68,14 +77,26 @@ const validationRules = {
 
 const divErrors = document.getElementById("errors");
 const ulErrorController = listController(document.createElement("ul"));
+divErrors.appendChild(ulErrorController.ul);
 
 form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    // clean errors and past success msg
     errors = [];
     ulErrorController.cleanList();
-    e.preventDefault();
+    removeAllChildrens(divErrors);
+
+    // get data and validate
     const dataBeforeValidate = getData(form, keys);
     validate(dataBeforeValidate, validationRules);
 
-    divErrors.appendChild(ulErrorController.ul);
-    const liErrors = errors.length ? errors.map((err) => ulErrorController.appendItemToList(err)) : `<p style="color:green">Formulari enviat correctament!</p>`;
+    const liErrors = errors.length ? errors.map((err) => ulErrorController.appendItemToList(err)) : null;
+
+    // if theres not errors append success message.
+    if (!liErrors) {
+        const pSuccessSubmit = document.createElement("p");
+        pSuccessSubmit.textContent = "Formulari enviat correctament!";
+        divErrors.appendChild(pSuccessSubmit);
+    }
 });

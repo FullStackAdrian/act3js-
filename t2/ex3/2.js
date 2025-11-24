@@ -14,21 +14,18 @@ function getData(form, keys) {
 function validate(data) {
 
     const errors = [];
-
-    if (!data.nom || data.nom.length < 3) {
+    console.log( data.nom);
+    if ( !data.nom || data.nom.length < 3 ) {
         errors.push("El nom és obligatori i ha de tenir mínim 3 caràcters.");
     }
-
-    if (!(data.edat > 0)) {
+    if (! data.edat > 0) {
         errors.push("L'edat ha de ser un número major que 0.");
     }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
         errors.push("L'email no té un format vàlid.");
 
     }
-
-    if (url && !/^https?:\/\/[^\s]+$/i.test(data.url)) {
+    if (!data.url && !/^https?:\/\/[^\s]+$/i.test(data.url)) {
         errors.push("La URL no té un format vàlid.");
     }
 
@@ -40,11 +37,11 @@ function validate(data) {
 }
 
 // las keys del formulario que queremos validar.
-const keys = ["nom ",
+const keys = [ "nom",
     "edat",
-    "emai",
-    "url "];
-
+    "email",
+    "url"
+];
 
 form.addEventListener("submit", e => {
     e.preventDefault();

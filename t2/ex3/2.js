@@ -25,7 +25,7 @@ function validate(data) {
         errors.push("L'email no té un format vàlid.");
 
     }
-    if (!data.url && !/^https?:\/\/[^\s]+$/i.test(data.url)) {
+    if (data.url && !/^https?:\/\/[^\s]+$/i.test(data.url)) {
         errors.push("La URL no té un format vàlid.");
     }
 

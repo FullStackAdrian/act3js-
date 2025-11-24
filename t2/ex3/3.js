@@ -18,6 +18,26 @@ function validate(data, validationRules) {
         }
     });
 }
+function listController(ul) {
+    function appendItemToList(text) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        ul.appendChild(li);
+        return li;
+    }
+    function deleteItem(li) {
+        if (li in ul) {
+            ul.removeChild(li);
+        }
+    }
+    function cleanList() {
+        while (ul.fristChild) {
+            ul.removeChild(ul.fristChild);
+        }
+    }
+
+    return { appendItemToList, deleteItem, cleanList };
+}
 
 const form = document.getElementById("form-tasca");
 

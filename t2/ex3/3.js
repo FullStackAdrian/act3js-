@@ -10,10 +10,10 @@ function getData(form, keys) {
     return data;
 }
 
-function validate(data, validationRules) {
+function validate(data, validationRules, errors) {
     Object.values(data).forEach((value, key) => {
         if (!validationRules[keys[key]].validate(value)) {
-            ulErrorController.appendItemToList(validationRules[keys[key]].message);
+            errors.push(validationRules[keys[key]].message);
         }
     });
 }
@@ -28,12 +28,17 @@ function removeAllChildrens(el) {
 function listController(ul) {
     function appendItemToList(data, keys) {
         const li = document.createElement("li");
-        keys.forEach(key => {
-            const text = data[key];
-            console.log(text);
-            li.textContent += " " + text;
-        });
-
+        if (keys !== null) {
+            keys.forEach(key => {
+                const text = data[key];
+                console.log(text);
+                li.textContent += " " + text;
+            });
+        } else {
+            data.forEach(text => {
+                li.textContent += " " + text;
+            });
+        }
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "delete";
         deleteButton.addEventListener('click', () => deleteItem(li));
@@ -73,7 +78,7 @@ const validationRules = {
             if (parts.length !== 3) return false;
             const [yyyy, mm, dd] = parts.map(Number);
             const date = new Date(yyyy, mm - 1, dd);
-            // if (isNaN(date)) return false;
+            if (isNaN(date)) return false;
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             return date >= today;
@@ -105,6 +110,7 @@ form.addEventListener("submit", (e) => {
     validate(data, validationRules);
 
     const liErrors = errors.length ? ulErrorController.getAllLi() : null;
+    // ulErrorController.appendItemToList(validationRules[keys[key]].message);
 
     // if theres no errors append success message.
     if (liErrors === null) {

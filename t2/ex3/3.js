@@ -33,13 +33,18 @@ function listController(ul) {
             console.log(text);
             li.textContent += " " + text;
         });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "delete";
+        deleteButton.addEventListener('click', () => deleteItem(li));
+
+        li.appendChild(deleteButton);
         ul.appendChild(li);
+
         return li;
     }
     function deleteItem(li) {
-        if (li in ul) {
-            ul.removeChild(li);
-        }
+        ul.removeChild(li);
     }
     function cleanList() {
         removeAllChildrens(ul);

@@ -26,9 +26,13 @@ function removeAllChildrens(el) {
 }
 
 function listController(ul) {
-    function appendItemToList(text) {
+    function appendItemToList(data, keys) {
         const li = document.createElement("li");
-        li.textContent = text;
+        keys.forEach(key => {
+            const text = data[key];
+            console.log(text);
+            li.textContent += " " + text;
+        });
         ul.appendChild(li);
         return li;
     }
@@ -87,8 +91,7 @@ divErrors.appendChild(ulErrorController.ul);
 form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // clean errors and past success msg
-    errors = [];
+    const errors = [];
     ulErrorController.cleanList();
     removeAllChildrens(divErrors);
 
@@ -104,6 +107,6 @@ form.addEventListener("submit", (e) => {
         pSuccessSubmit.textContent = "Formulari enviat correctament!";
         divErrors.appendChild(pSuccessSubmit);
 
-        ulTascaController.appendItemToList(data);
+        ulTascaController.appendItemToList(data, keys);
     }
 });
